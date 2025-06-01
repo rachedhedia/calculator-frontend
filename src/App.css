@@ -118,9 +118,9 @@ button[data-function="true"] {
   color: black;
 }
 
-/* Operation buttons (orange) */
+/* Operation buttons (red) */
 button[data-operation="true"] {
-  background-color: #FF9F0A;
+  background-color: #C1121F;
   color: white;
 }
 
