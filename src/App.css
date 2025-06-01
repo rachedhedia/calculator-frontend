@@ -1,5 +1,10 @@
 .App {
   text-align: center;
+  background-color: #000000;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .App-logo {
@@ -14,13 +19,12 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #000000;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
   color: white;
 }
 
@@ -38,22 +42,44 @@
 }
 
 .calculator {
-  background-color: #1a1a1a;
-  padding: 2rem;
+  background-color: #000000;
+  padding: 1rem;
   border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-  width: 300px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.display {
+  background-color: #000000;
+  color: white;
+  text-align: right;
+  padding: 20px;
+  font-size: 3rem;
+  font-weight: 300;
+  min-height: 80px;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .calculator input {
-  width: 100%;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  font-size: 1.2rem;
+  grid-column: span 4;
+  width: calc(100% - 20px);
+  margin: 5px 10px;
+  padding: 15px;
+  font-size: 1.5rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 35px;
   background-color: #333;
   color: white;
+  text-align: right;
 }
 
 .calculator input:disabled {
@@ -63,24 +89,26 @@
 
 .buttons {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
 }
 
 button {
-  padding: 0.8rem;
-  font-size: 1rem;
+  padding: 20px;
+  font-size: 1.5rem;
   border: none;
-  border-radius: 5px;
-  background-color: #4CAF50;
-  color: white;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: filter 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 button:hover:not(:disabled) {
-  background-color: #45a049;
+  filter: brightness(120%);
 }
 
 button:disabled {
@@ -88,20 +116,38 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Operation buttons (orange) */
+button[data-operation="true"] {
+  background-color: #FF9F0A;
+  color: white;
+}
+
+/* Number buttons (light gray) */
+button[data-number="true"] {
+  background-color: #A5A5A5;
+  color: black;
+}
+
 .error {
   color: #ff6b6b;
   margin-top: 1rem;
   font-size: 0.9rem;
+  grid-column: span 4;
+  text-align: center;
 }
 
 .result {
-  margin-top: 1rem;
-  font-size: 1.2rem;
-  color: #4CAF50;
+  color: white;
+  font-size: 2.5rem;
+  margin: 10px 0;
+  text-align: right;
+  grid-column: span 4;
 }
 
 .loading {
   margin-top: 1rem;
   font-size: 0.9rem;
   color: #ffd700;
+  grid-column: span 4;
+  text-align: center;
 }
