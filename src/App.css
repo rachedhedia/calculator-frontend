@@ -56,6 +56,11 @@
   color: white;
 }
 
+.calculator input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .buttons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -74,8 +79,13 @@ button {
   transition: background-color 0.3s;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: #45a049;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .error {
@@ -88,4 +98,10 @@ button:hover {
   margin-top: 1rem;
   font-size: 1.2rem;
   color: #4CAF50;
+}
+
+.loading {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #ffd700;
 }
