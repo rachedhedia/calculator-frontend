@@ -132,7 +132,16 @@ function App() {
     <div className="App">
       <div className="calculator">
         <div className="display">
-          {loading ? 'Calculating...' : displayValue}
+          {displayValue}
+          {loading && (
+            <div className="loading-overlay">
+              <div className="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          )}
         </div>
         <div className="buttons">
           <button onClick={clearCalculator} data-function="true">AC</button>
