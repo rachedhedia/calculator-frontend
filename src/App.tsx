@@ -10,7 +10,7 @@ function App() {
   const handleCalculate = async (operation: string) => {
     setError('');
     try {
-      const response = await fetch('http://localhost:8000/api/calculate', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/calculate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,6 +30,7 @@ function App() {
       }
     } catch (err) {
       setError('Failed to perform calculation');
+      console.error('Error details:', err);
     }
   };
 
