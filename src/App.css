@@ -43,12 +43,12 @@
 
 .calculator {
   background-color: #000000;
-  padding: 1rem;
-  border-radius: 10px;
-  width: 320px;
+  padding: 20px;
+  width: 100%;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 }
 
 .display {
@@ -56,10 +56,13 @@
   color: white;
   text-align: right;
   padding: 20px;
-  font-size: 3rem;
+  font-size: 4.5rem;
   font-weight: 300;
-  min-height: 80px;
-  margin-bottom: 20px;
+  min-height: 120px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  word-break: break-all;
 }
 
 .input-group {
@@ -90,30 +93,28 @@
 .buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 12px;
 }
 
 button {
-  padding: 20px;
-  font-size: 1.5rem;
+  font-size: 2rem;
   border: none;
   border-radius: 50%;
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   cursor: pointer;
   transition: filter 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 400;
+  -webkit-tap-highlight-color: transparent;
 }
 
-button:hover:not(:disabled) {
-  filter: brightness(120%);
-}
-
-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+/* Function buttons (light gray) */
+button[data-function="true"] {
+  background-color: #A5A5A5;
+  color: black;
 }
 
 /* Operation buttons (orange) */
@@ -122,18 +123,34 @@ button[data-operation="true"] {
   color: white;
 }
 
-/* Number buttons (light gray) */
+/* Number buttons (dark gray) */
 button[data-number="true"] {
-  background-color: #A5A5A5;
-  color: black;
+  background-color: #333333;
+  color: white;
+}
+
+/* Zero button special styling */
+button.zero {
+  grid-column: span 2;
+  width: 172px;
+  border-radius: 40px;
+  justify-content: flex-start;
+  padding-left: 32px;
+}
+
+button:active {
+  filter: brightness(130%);
 }
 
 .error {
   color: #ff6b6b;
-  margin-top: 1rem;
   font-size: 0.9rem;
-  grid-column: span 4;
   text-align: center;
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  margin: auto;
 }
 
 .result {
@@ -150,4 +167,33 @@ button[data-number="true"] {
   color: #ffd700;
   grid-column: span 4;
   text-align: center;
+}
+
+@media (max-width: 430px) {
+  .calculator {
+    height: 100vh;
+    max-width: 100%;
+    justify-content: flex-end;
+    padding: 0;
+  }
+
+  .display {
+    padding: 0 20px;
+    margin-bottom: 20px;
+  }
+
+  .buttons {
+    gap: 10px;
+    padding: 20px;
+  }
+
+  button {
+    width: 70px;
+    height: 70px;
+    font-size: 1.8rem;
+  }
+
+  button.zero {
+    width: 150px;
+  }
 }

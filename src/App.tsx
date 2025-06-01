@@ -2,85 +2,163 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [num1, setNum1] = useState<string>('');
-  const [num2, setNum2] = useState<string>('');
-  const [result, setResult] = useState<number | null>(null);
+  const [displayValue, setDisplayValue] = useState<string>('0');
+  const [firstNumber, setFirstNumber] = useState<number | null>(null);
+  const [operation, setOperation] = useState<string | null>(null);
+  const [waitingForSecondNumber, setWaitingForSecondNumber] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleCalculate = async (operation: string) => {
-    if (!num1 || !num2) {
-      setError('Please enter both numbers');
-      return;
+  const handleNumberInput = (num: string) => {
+    if (waitingForSecondNumber) {
+      setDisplayValue(num);
+      setWaitingForSecondNumber(false);
+    } else {
+      setDisplayValue(displayValue === '0' ? num : displayValue + num);
     }
-    
-    setError('');
-    setLoading(true);
-    try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'https://calculator-backend-fkj3.onrender.com';
-      
-      const response = await fetch(`${apiUrl}/api/calculate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          num1: parseFloat(num1),
-          num2: parseFloat(num2),
-          operation,
-        }),
-      });
+  };
 
-      const data = await response.json();
-      if (response.ok) {
-        setResult(data.result);
-      } else {
-        setError(data.error || 'An error occurred');
+  const handleDecimalPoint = () => {
+    if (waitingForSecondNumber) {
+      setDisplayValue('0.');
+      setWaitingForSecondNumber(false);
+    } else if (!displayValue.includes('.')) {
+      setDisplayValue(displayValue + '.');
+    }
+  };
+
+  const handleOperationClick = async (op: string) => {
+    const currentValue = parseFloat(displayValue);
+
+    if (firstNumber === null) {
+      setFirstNumber(currentValue);
+      setOperation(op);
+      setWaitingForSecondNumber(true);
+    } else if (waitingForSecondNumber) {
+      setOperation(op);
+    } else {
+      try {
+        setLoading(true);
+        setError('');
+        const apiUrl = process.env.REACT_APP_API_URL || 'https://calculator-backend-fkj3.onrender.com';
+        
+        const response = await fetch(`${apiUrl}/api/calculate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            num1: firstNumber,
+            num2: currentValue,
+            operation: operation,
+          }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setDisplayValue(data.result.toString());
+          setFirstNumber(data.result);
+          setOperation(op);
+          setWaitingForSecondNumber(true);
+        } else {
+          setError(data.error || 'An error occurred');
+          clearCalculator();
+        }
+      } catch (err) {
+        setError('Failed to perform calculation. Please try again.');
+        clearCalculator();
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError('Failed to perform calculation. Please try again.');
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const handleEquals = async () => {
+    if (firstNumber !== null && operation && !waitingForSecondNumber) {
+      const currentValue = parseFloat(displayValue);
+      try {
+        setLoading(true);
+        setError('');
+        const apiUrl = process.env.REACT_APP_API_URL || 'https://calculator-backend-fkj3.onrender.com';
+        
+        const response = await fetch(`${apiUrl}/api/calculate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            num1: firstNumber,
+            num2: currentValue,
+            operation: operation,
+          }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setDisplayValue(data.result.toString());
+          setFirstNumber(null);
+          setOperation(null);
+          setWaitingForSecondNumber(false);
+        } else {
+          setError(data.error || 'An error occurred');
+          clearCalculator();
+        }
+      } catch (err) {
+        setError('Failed to perform calculation. Please try again.');
+        clearCalculator();
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const clearCalculator = () => {
-    setNum1('');
-    setNum2('');
-    setResult(null);
+    setDisplayValue('0');
+    setFirstNumber(null);
+    setOperation(null);
+    setWaitingForSecondNumber(false);
     setError('');
+  };
+
+  const handlePlusMinusToggle = () => {
+    setDisplayValue((parseFloat(displayValue) * -1).toString());
+  };
+
+  const handlePercentage = () => {
+    setDisplayValue((parseFloat(displayValue) / 100).toString());
   };
 
   return (
     <div className="App">
       <div className="calculator">
         <div className="display">
-          {result !== null ? result : (error ? '0' : num2 || num1 || '0')}
-        </div>
-        <div className="input-group">
-          <input
-            type="number"
-            value={num1}
-            onChange={(e) => setNum1(e.target.value)}
-            placeholder="First number"
-            disabled={loading}
-          />
-          <input
-            type="number"
-            value={num2}
-            onChange={(e) => setNum2(e.target.value)}
-            placeholder="Second number"
-            disabled={loading}
-          />
+          {loading ? 'Calculating...' : displayValue}
         </div>
         <div className="buttons">
-          <button onClick={clearCalculator} data-number="true">C</button>
-          <button onClick={() => handleCalculate('divide')} data-operation="true">÷</button>
-          <button onClick={() => handleCalculate('multiply')} data-operation="true">×</button>
-          <button onClick={() => handleCalculate('subtract')} data-operation="true">−</button>
-          <button onClick={() => handleCalculate('add')} data-operation="true">+</button>
+          <button onClick={clearCalculator} data-function="true">AC</button>
+          <button onClick={handlePlusMinusToggle} data-function="true">±</button>
+          <button onClick={handlePercentage} data-function="true">%</button>
+          <button onClick={() => handleOperationClick('divide')} data-operation="true">÷</button>
+          
+          <button onClick={() => handleNumberInput('7')} data-number="true">7</button>
+          <button onClick={() => handleNumberInput('8')} data-number="true">8</button>
+          <button onClick={() => handleNumberInput('9')} data-number="true">9</button>
+          <button onClick={() => handleOperationClick('multiply')} data-operation="true">×</button>
+          
+          <button onClick={() => handleNumberInput('4')} data-number="true">4</button>
+          <button onClick={() => handleNumberInput('5')} data-number="true">5</button>
+          <button onClick={() => handleNumberInput('6')} data-number="true">6</button>
+          <button onClick={() => handleOperationClick('subtract')} data-operation="true">−</button>
+          
+          <button onClick={() => handleNumberInput('1')} data-number="true">1</button>
+          <button onClick={() => handleNumberInput('2')} data-number="true">2</button>
+          <button onClick={() => handleNumberInput('3')} data-number="true">3</button>
+          <button onClick={() => handleOperationClick('add')} data-operation="true">+</button>
+          
+          <button onClick={() => handleNumberInput('0')} data-number="true" className="zero">0</button>
+          <button onClick={handleDecimalPoint} data-number="true">.</button>
+          <button onClick={handleEquals} data-operation="true">=</button>
         </div>
-        {loading && <div className="loading">Calculating...</div>}
         {error && <div className="error">{error}</div>}
       </div>
     </div>
